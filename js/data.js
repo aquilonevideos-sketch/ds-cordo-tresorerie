@@ -229,3 +229,16 @@ const EXAMPLE_TASKS = {
       start: '2026-10-01', end: '2026-10-10', step: '', deliverable: 'Compte actif', notes: '' },
   ],
 };
+
+// ————— Récompenses —————
+// Les points gagnés (XP) s'échangent contre des récompenses. Liste modifiable dans l'onglet « Récompenses ».
+// cost = points nécessaires · minLevel = niveau minimum · repeatable = peut être obtenue plusieurs fois
+const DEFAULT_REWARDS = [
+  { id: 'r_cafe', icon: '☕', name: 'Pause café-croissant', desc: 'Un vrai moment de pause en terrasse.', cost: 100, minLevel: 1, repeatable: true },
+  { id: 'r_livre', icon: '📚', name: 'Un livre ou un magazine', desc: 'Pour se cultiver ou se détendre.', cost: 200, minLevel: 1, repeatable: true },
+  { id: 'r_resto', icon: '🍽️', name: 'Un restaurant', desc: 'Un repas au restaurant pour fêter les progrès.', cost: 400, minLevel: 2, repeatable: true },
+  { id: 'r_soin', icon: '💆', name: 'Un soin bien-être', desc: 'Massage, spa ou soin au choix.', cost: 600, minLevel: 3, repeatable: true },
+  { id: 'r_outil', icon: '🛠️', name: "Un nouvel outil pour l'atelier", desc: 'Le petit matériel dont on rêve depuis longtemps.', cost: 800, minLevel: 3, repeatable: true },
+  { id: 'r_off', icon: '🌴', name: 'Une journée off', desc: "Une journée rien qu'à soi (à caler sur un jour calme).", cost: 1000, minLevel: 4, repeatable: true },
+  { id: 'r_weekend', icon: '🎁', name: 'Un week-end découverte', desc: "La grande récompense de l'année.", cost: 2000, minLevel: 5, repeatable: false },
+];

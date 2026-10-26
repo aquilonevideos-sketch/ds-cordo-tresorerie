@@ -25,8 +25,11 @@ function recompute() {
 // Enregistre, recalcule et célèbre les nouveaux succès / niveaux
 function commit(rerender = true) {
   const before = xp ? xp.lvl : null;
+  const affBefore = xp ? affordableRewards().map(r => r.id) : [];
   save();
   recompute();
+  const newlyAff = affordableRewards().filter(r => !affBefore.includes(r.id));
+  if (xp && affBefore && newlyAff.length) setTimeout(() => toast('🎁', 'Nouvelle récompense accessible !', newlyAff.map(r => r.name).join(', ')), 700);
   const fresh = xp.ach.filter(a => a.ok && !state.seenAch.includes(a.id));
   if (fresh.length) {
     state.seenAch.push(...fresh.map(a => a.id));
@@ -89,6 +92,7 @@ function playerCard(compact) {
       <div class="player-title">${esc(xp.title)}</div>
       ${compact ? '' : `<div class="bar-label"><span>XP <b>${nf0.format(xp.total)}</b></span><span>${xp.next ? `${nf0.format(xp.next - xp.total)} XP → ${esc(xp.nextTitle)}` : 'Niveau max !'}</span></div>`}
       ${bar('xp', xp.next ? into / span : 1)}
+      ${compact ? '' : qgRewardsLine()}
     </div>
   </div>`;
 }
@@ -96,7 +100,7 @@ function playerCard(compact) {
 // ————— Vues —————
 const VIEWS = {
   qg: viewQG, mission: viewMission, plan: viewPlan, quetes: viewQuetes,
-  familles: viewFamilles, succes: viewSucces, planning: viewPlanning, reglages: viewReglages, sauvegarde: viewSauvegarde,
+  familles: viewFamilles, succes: viewSucces, planning: viewPlanning, recompenses: viewRecompenses, reglages: viewReglages, sauvegarde: viewSauvegarde,
 };
 
 function render() {
@@ -107,7 +111,7 @@ function render() {
   ui.charts = [];
   $('#view').innerHTML = VIEWS[ui.view]();
   document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('active', a.dataset.view === ui.view));
-  $('#sidePlayer').innerHTML = `<div class="card">${playerCard(true)}<div class="bar-label"><span>XP</span><b>${nf0.format(xp.total)}</b></div></div>`;
+  $('#sidePlayer').innerHTML = `<div class="card">${playerCard(true)}<div class="bar-label"><span>XP</span><b>${nf0.format(xp.total)}</b></div><a href="#recompenses" class="bar-label" style="text-decoration:none;margin:0"><span>🎁 Points</span><b style="color:var(--gold)">${nf0.format(xp.points)}</b></a></div>`;
   if (ui.view === 'qg') drawQGCharts();
   if (ui.view === 'familles') drawFamChart();
   if (focusId) {
@@ -697,6 +701,7 @@ function viewSauvegarde() {
         <li>+25 XP par quête annexe, +10 XP par fiche de coût (jusqu’à 10).</li>
         <li>Planning des tâches : +30 / +20 / +15 / +10 XP par tâche terminée selon sa priorité (P0 → P3), +5 si elle est bouclée avant sa date de fin.</li>
         <li>Succès : boss trimestriels vaincus, partenaires, panier, rémunération… (onglet <a href="#succes">Succès</a>).</li>
+        <li>Les points s'échangent contre des récompenses dans l'onglet <a href="#recompenses">Récompenses</a> (le niveau ne baisse pas).</li>
       </ul>
     </div>
   </div>`;

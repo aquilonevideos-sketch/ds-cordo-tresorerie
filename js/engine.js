@@ -22,6 +22,7 @@ function defaultState() {
     closedAt: {},     // date de clôture de chaque mois (rituel du 10)
     lastBackup: null,
     planning: seedPlanning(),
+    rewards: { items: clone(DEFAULT_REWARDS), claims: [] },
   };
 }
 
@@ -40,6 +41,7 @@ function normalizeState(s) {
   out.hyp = Object.assign(clone(DEFAULT_HYP), (s && s.hyp) || {});
   for (const k of ['tickets', 'tvaPayOv']) if (!Array.isArray(out[k]) || out[k].length !== N) out[k] = empty();
   if (!Array.isArray(out.partners) || out.partners.length !== 4) out.partners = [null, null, null, null];
+  if (!out.rewards || !Array.isArray(out.rewards.items) || !Array.isArray(out.rewards.claims)) out.rewards = { items: clone(DEFAULT_REWARDS), claims: [] };
   if (!out.planning || !Array.isArray(out.planning.boards) || !Array.isArray(out.planning.items)) out.planning = seedPlanning();
   return out;
 }
@@ -311,7 +313,8 @@ function computeXP(state, c) {
   let lvl = 0;
   for (let i = 0; i < LEVELS.length; i++) if (total >= LEVELS[i].xp) lvl = i;
   const next = LEVELS[lvl + 1];
-  return { total, lvl: lvl + 1, title: LEVELS[lvl].title, cur: LEVELS[lvl].xp, next: next ? next.xp : null,
+  const spent = sum(((state.rewards && state.rewards.claims) || []).map(cl => cl.cost));
+  return { spent, points: total - spent, total, lvl: lvl + 1, title: LEVELS[lvl].title, cur: LEVELS[lvl].xp, next: next ? next.xp : null,
     nextTitle: next ? next.title : null, log, ach };
 }
 

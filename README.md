@@ -15,6 +15,7 @@ Il reprend fidèlement le classeur Excel *Plan de trésorerie DS CORDO* (BE CONS
 | 🎯 **Quêtes & Boss** | Les 6 objectifs SMART, les 4 bilans trimestriels (15 / 18 / 20 / 22 k€), partenaires actifs, fiches de coût, quêtes annexes |
 | 🧩 **Familles** | CA, achats et taux de marge réels des 8 familles vs taux cible |
 | 🏆 **Succès** | Badges, niveaux et journal d'XP |
+| 🎁 **Récompenses** | Boutique : les points d'XP gagnés s'échangent contre des récompenses (coût en points, niveau minimum, unique ou répétable), liste personnalisable, historique avec annulation |
 | ⚙️ **Réglages** | Toutes les hypothèses du fichier Excel (trésorerie initiale, TVA, mix, saisonnalité, rémunération…) |
 | 💾 **Sauvegarde & guide** | Sauvegarde / restauration (.json), export CSV, mode d'emploi |
 
@@ -38,5 +39,6 @@ css/style.css   thème « arcade »
 js/data.js      hypothèses et lignes du plan (issues du fichier Excel)
 js/engine.js    moteur de calcul (formules du plan) + XP / succès
 js/planning.js  planning des tâches (Kanban, liste, frise, import/export Excel)
+js/rewards.js   boutique des récompenses
 js/app.js       interface
 ```

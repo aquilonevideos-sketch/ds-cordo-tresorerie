@@ -371,3 +371,12 @@ input.inp[type=date] { color-scheme: dark; }
   .kanban { grid-template-columns: 1fr; }
   .g-row { grid-template-columns: 140px minmax(420px, 1fr); }
 }
+
+/* ——— Récompenses ——— */
+.reward { position: relative; }
+.reward .bar { width: 100%; }
+.rw-cost { font: 700 15px var(--head); color: var(--gold); }
+.rw-edit { position: absolute; top: 8px; right: 8px; background: transparent; border: 0; color: var(--dim); cursor: pointer; font-size: 14px; padding: 4px; border-radius: 6px; }
+.rw-edit:hover { color: var(--cyan); background: var(--panel2); }
+.badge.reward.ok { animation: glowgold 2.4s infinite; }
+@keyframes glowgold { 50% { box-shadow: 0 0 26px rgba(255, 204, 61, .35); } }
