@@ -43,14 +43,14 @@ button, input, select { font: inherit; color: inherit; }
   background: rgba(21, 18, 46, .85); border-right: 1px solid var(--line);
   padding: 18px 14px; display: flex; flex-direction: column; gap: 18px;
 }
-.brand { display: flex; gap: 10px; align-items: center; }
+.brand { display: flex; flex-direction: column; gap: 8px; align-items: center; text-decoration: none; }
 .brand-logo {
-  width: 42px; height: 42px; display: grid; place-items: center; font-size: 22px;
-  border-radius: 12px; background: linear-gradient(135deg, var(--violet), var(--pink));
-  box-shadow: 0 0 18px rgba(255, 79, 216, .45);
+  width: 100%; max-width: 170px; aspect-ratio: 1; object-fit: cover; display: block;
+  border-radius: 16px; background: #fff;
+  box-shadow: 0 0 0 2px rgba(139, 108, 255, .5), 0 0 22px rgba(255, 79, 216, .35);
 }
 .brand-name { font: 700 18px var(--head); letter-spacing: .08em; }
-.brand-sub { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; }
+.brand-sub { text-align: center; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .12em; }
 .nav { display: flex; flex-direction: column; gap: 2px; }
 .nav a {
   display: flex; gap: 10px; align-items: center; padding: 9px 10px; border-radius: 10px;
@@ -300,7 +300,8 @@ input.num:disabled { opacity: .5; }
   .app { grid-template-columns: 1fr; }
   .sidebar { position: sticky; top: 0; z-index: 20; height: auto; flex-direction: row; align-items: center; padding: 10px 12px; gap: 10px; border-right: 0; border-bottom: 1px solid var(--line); }
   .brand-sub, .brand-name, .side-player { display: none; }
-  .brand-logo { width: 36px; height: 36px; flex: none; }
+  .brand { flex: none; }
+  .brand-logo { width: 40px; height: 40px; border-radius: 10px; }
   .nav { flex-direction: row; overflow-x: auto; gap: 4px; }
   .nav a { white-space: nowrap; padding: 7px 9px; font-size: 13px; }
   .nav a.active { box-shadow: inset 0 -2px 0 var(--cyan); }
@@ -391,3 +392,8 @@ input.inp[type=date] { color-scheme: dark; }
 .qr { width: 200px; height: 200px; background: #fff; padding: 8px; border-radius: 12px; flex: none; }
 .qr svg { width: 100%; height: 100%; display: block; }
 code { background: #0b0920; padding: 1px 6px; border-radius: 6px; font-size: 12px; }
+
+.avatar img { width: 100%; height: 100%; object-fit: cover; border-radius: inherit; background: #fff; }
+.avatar { padding: 2px; }
+.rw-line { flex-wrap: wrap; align-items: center; }
+.rw-line > * { white-space: nowrap; }

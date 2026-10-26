@@ -88,7 +88,7 @@ function playerCard(compact) {
   const span = xp.next ? xp.next - xp.cur : 1;
   const into = xp.total - xp.cur;
   return `<div class="player">
-    <div class="avatar">DS<span class="lvl">${xp.lvl}</span></div>
+    <div class="avatar"><img src="assets/logo-marselle.jpg" alt=""><span class="lvl">${xp.lvl}</span></div>
     <div style="flex:1;min-width:0">
       <div class="player-name">${esc(state.hyp.gerante.split(' ')[0] || 'Déborah')}</div>
       <div class="player-title">${esc(xp.title)}</div>

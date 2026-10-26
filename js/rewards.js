@@ -68,7 +68,7 @@ function viewRecompenses() {
 
 function qgRewardsLine() {
   const n = affordableRewards().length;
-  return `<div class="bar-label" style="margin-top:10px"><span>💰 Points à dépenser <b>${nf0.format(xp.points)}</b></span>
+  return `<div class="bar-label rw-line" style="margin-top:10px"><span>💰 Points à dépenser <b>${nf0.format(xp.points)}</b></span>
     <a href="#recompenses" class="tag ${n ? 'gold' : ''}" style="text-decoration:none">🎁 ${n} récompense${n > 1 ? 's' : ''} disponible${n > 1 ? 's' : ''}</a></div>`;
 }
 
