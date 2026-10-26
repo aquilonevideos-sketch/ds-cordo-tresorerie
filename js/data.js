@@ -185,3 +185,47 @@ const SIDE_QUESTS = [
   { group: 'Plan de communication', id: 'boitage2', label: '2e boîtage aux mois 2-3' },
   { group: 'Plan de communication', id: 'fidelite', label: 'Carte de fidélité et vitrine (devis imprimeur)' },
 ];
+
+// ————— Planning de gestion des tâches —————
+// Même structure que le modèle Excel « Planning de gestion des tâches » :
+// Tâche · Priorité · Propriétaire · État · Date de début · Date de fin · Étape · Livrable · Notes
+const TASK_STATUSES = [
+  { id: 'Pas commencé', icon: '💤', color: 'muted' },
+  { id: 'En cours', icon: '⚔️', color: 'info' },
+  { id: 'Bloqué', icon: '🧱', color: 'bad' },
+  { id: 'Terminé', icon: '🏁', color: 'ok' },
+];
+const TASK_PRIOS = [
+  { id: 'P0', label: 'Critique', icon: '🔥', xp: 30 },
+  { id: 'P1', label: 'Haute', icon: '⚡', xp: 20 },
+  { id: 'P2', label: 'Moyenne', icon: '🔷', xp: 15 },
+  { id: 'P3', label: 'Basse', icon: '🌱', xp: 10 },
+];
+
+// Tâches d'exemple (fictives) pour montrer le fonctionnement — à supprimer ou modifier librement
+const EXAMPLE_TASKS = {
+  boards: [
+    { id: 'b_lancement', name: "Exemple — Lancement de l'atelier" },
+    { id: 'b_gestion', name: 'Exemple — Gestion & administratif' },
+  ],
+  items: [
+    { board: 'b_lancement', title: "Préparer l'ouverture du samedi 14 novembre", prio: 'P0', owner: 'Déborah', status: 'En cours',
+      start: '2026-10-20', end: '2026-11-14', step: 'Vitrine, caisse et stock prêts', deliverable: 'Atelier ouvert', notes: '' },
+    { board: 'b_lancement', title: '1er boîtage de flyers autour de La Garde', prio: 'P1', owner: 'Déborah', status: 'Pas commencé',
+      start: '2026-11-07', end: '2026-11-14', step: "Récupérer les 2 000 flyers chez l'imprimeur", deliverable: 'Flyers distribués', notes: 'Exemple de tâche' },
+    { board: 'b_lancement', title: 'Campagne Facebook / Instagram de lancement', prio: 'P2', owner: 'Déborah', status: 'Pas commencé',
+      start: '2026-11-10', end: '2026-11-30', step: 'Ciblage La Garde + 10 km', deliverable: 'Campagne en ligne', notes: '' },
+    { board: 'b_lancement', title: 'Obtenir les 10 premiers avis Google', prio: 'P2', owner: 'Déborah', status: 'Pas commencé',
+      start: '2026-11-14', end: '2027-01-31', step: 'QR code au comptoir', deliverable: '10 avis', notes: '' },
+    { board: 'b_lancement', title: 'Rencontrer un 1er partenaire prescripteur', prio: 'P1', owner: 'Déborah', status: 'Pas commencé',
+      start: '2026-11-15', end: '2027-01-31', step: 'Liste de commerces voisins à démarcher', deliverable: 'Partenaire actif', notes: 'SMART n°03' },
+    { board: 'b_gestion', title: 'Confirmer le régime de TVA avec l’expert-comptable', prio: 'P0', owner: 'Déborah', status: 'Bloqué',
+      start: '2026-10-15', end: '2026-10-31', step: 'En attente de réponse', deliverable: 'Régime confirmé', notes: 'Exemple de tâche bloquée' },
+    { board: 'b_gestion', title: 'Réaliser 10 fiches de coût (cordonnerie, clés)', prio: 'P1', owner: 'Déborah', status: 'Pas commencé',
+      start: '2026-11-15', end: '2027-01-31', step: 'Chronométrer les prestations', deliverable: '10 fiches', notes: 'SMART n°04' },
+    { board: 'b_gestion', title: 'Remise au réel de novembre (rituel du 10)', prio: 'P1', owner: 'Déborah', status: 'Pas commencé',
+      start: '2026-12-01', end: '2026-12-10', step: 'Relevé bancaire + caisse + Pennylane', deliverable: 'Mission validée', notes: '' },
+    { board: 'b_gestion', title: 'Ouvrir le compte Pennylane du nouvel atelier', prio: 'P3', owner: 'Déborah', status: 'Terminé',
+      start: '2026-10-01', end: '2026-10-10', step: '', deliverable: 'Compte actif', notes: '' },
+  ],
+};

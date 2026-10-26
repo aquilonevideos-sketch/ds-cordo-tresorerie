@@ -21,7 +21,16 @@ function defaultState() {
     seenAch: [],
     closedAt: {},     // date de clôture de chaque mois (rituel du 10)
     lastBackup: null,
+    planning: seedPlanning(),
   };
+}
+
+let taskSeq = 0;
+function newTaskId() { return 't' + Date.now().toString(36) + (taskSeq++).toString(36); }
+function seedPlanning() {
+  const ex = clone(EXAMPLE_TASKS);
+  ex.items = ex.items.map(t => ({ id: newTaskId(), doneAt: t.status === 'Terminé' ? t.end : null, example: true, ...t }));
+  return ex;
 }
 
 // Complète un état chargé (ancienne version, import) avec les valeurs par défaut
@@ -31,6 +40,7 @@ function normalizeState(s) {
   out.hyp = Object.assign(clone(DEFAULT_HYP), (s && s.hyp) || {});
   for (const k of ['tickets', 'tvaPayOv']) if (!Array.isArray(out[k]) || out[k].length !== N) out[k] = empty();
   if (!Array.isArray(out.partners) || out.partners.length !== 4) out.partners = [null, null, null, null];
+  if (!out.planning || !Array.isArray(out.planning.boards) || !Array.isArray(out.planning.items)) out.planning = seedPlanning();
   return out;
 }
 
@@ -218,6 +228,23 @@ function ritualDeadline(m) {
   return new Date(y, mo + 1, 10, 23, 59, 59);
 }
 
+// Statistiques du planning des tâches
+function todayISO() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+function taskStats(state) {
+  const items = (state.planning && state.planning.items) || [];
+  const today = todayISO();
+  // les tâches d'exemple et celles importées déjà terminées ne rapportent pas d'XP
+  const done = items.filter(t => t.status === 'Terminé' && !t.example && !t.noXp);
+  const open = items.filter(t => t.status !== 'Terminé');
+  const late = open.filter(t => t.end && t.end < today);
+  const soon = open.filter(t => t.end && t.end >= today && (new Date(t.end) - new Date(today)) / 86400000 <= 7);
+  const onTime = done.filter(t => t.end && t.doneAt && t.doneAt <= t.end);
+  return { items, done, open, late, soon, onTime, blocked: open.filter(t => t.status === 'Bloqué') };
+}
+
 function achievementsList(state, c) {
   const h = state.hyp, n = c.n, R = c.R, P = c.P;
   const closedMonths = [...Array(n).keys()];
@@ -231,6 +258,7 @@ function achievementsList(state, c) {
   const remuOn = closedMonths.some(m => R[m].lines.remu > 0);
   const remu2000 = closedMonths.some(m => R[m].lines.remu >= h.remuVisee);
   const partnersMax = Math.max(0, ...state.partners.map(x => x || 0));
+  const ts = taskStats(state);
   return [
     { id: 'first', icon: '🎮', name: 'Partie lancée', desc: 'Remettre un premier mois au réel', xp: 50, ok: n >= 1 },
     { id: 'ticket', icon: '🧾', name: 'Œil de lynx', desc: 'Saisir le nombre de tickets de caisse d\'un mois', xp: 30, ok: ticketsDone >= 1 },
@@ -249,6 +277,9 @@ function achievementsList(state, c) {
     { id: 'remu', icon: '💰', name: 'Première paie', desc: 'Verser une rémunération à Déborah', xp: 100, ok: remuOn },
     { id: 'remu2000', icon: '👑', name: 'Objectif 2 000 €', desc: `Se verser ${fmtE(h.remuVisee)} nets sur un mois`, xp: 200, ok: remu2000 },
     { id: 'quests5', icon: '📜', name: 'Aventurière', desc: 'Accomplir 5 quêtes annexes', xp: 60, ok: questDone >= 5 },
+    { id: 'task1', icon: '✅', name: 'Première tâche bouclée', desc: 'Passer une tâche du planning à « Terminé »', xp: 30, ok: ts.done.length >= 1 },
+    { id: 'task10', icon: '🗂️', name: 'Organisatrice', desc: '10 tâches terminées dans le planning', xp: 100, ok: ts.done.length >= 10 },
+    { id: 'task25', icon: '🧠', name: 'Cheffe de projet', desc: '25 tâches terminées dans le planning', xp: 200, ok: ts.done.length >= 25 },
     { id: 'year', icon: '🌟', name: 'Année complète', desc: 'Remettre les 12 mois au réel', xp: 300, ok: n >= 12 },
     { id: 'ca75', icon: '💎', name: 'Objectif 75 k€', desc: `Atteindre ${fmtK(h.caObjectif)} de CA réel`, xp: 400, ok: c.reelDate.ca >= h.caObjectif },
   ];
@@ -266,6 +297,12 @@ function computeXP(state, c) {
   }
   const q = Object.values(state.quests).filter(Boolean).length;
   if (q) log.push({ label: 'Quêtes annexes', xp: q * 25, why: `${q} × 25` });
+  const ts = taskStats(state);
+  if (ts.done.length) {
+    const tx = sum(ts.done.map(t => (TASK_PRIOS.find(p => p.id === t.prio) || TASK_PRIOS[3]).xp));
+    const bonus = ts.onTime.length * 5;
+    log.push({ label: 'Tâches terminées', xp: tx + bonus, why: `${ts.done.length} tâche(s) selon la priorité${bonus ? ` · ${ts.onTime.length} dans les délais +5` : ''}` });
+  }
   if (state.fiches) log.push({ label: 'Fiches de coût', xp: Math.min(state.fiches, 10) * 10, why: `${Math.min(state.fiches, 10)} × 10` });
   const ach = achievementsList(state, c);
   const achXp = sum(ach.filter(a => a.ok).map(a => a.xp));
@@ -294,5 +331,5 @@ function parseNum(s) {
 }
 
 if (typeof module !== 'undefined') {
-  module.exports = { defaultState, normalizeState, compute, computeXP, achievementsList, LEVELS, ritualDeadline };
+  module.exports = { taskStats, defaultState, normalizeState, compute, computeXP, achievementsList, LEVELS, ritualDeadline };
 }

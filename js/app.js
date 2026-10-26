@@ -96,7 +96,7 @@ function playerCard(compact) {
 // ————— Vues —————
 const VIEWS = {
   qg: viewQG, mission: viewMission, plan: viewPlan, quetes: viewQuetes,
-  familles: viewFamilles, succes: viewSucces, reglages: viewReglages, sauvegarde: viewSauvegarde,
+  familles: viewFamilles, succes: viewSucces, planning: viewPlanning, reglages: viewReglages, sauvegarde: viewSauvegarde,
 };
 
 function render() {
@@ -209,7 +209,8 @@ function viewQG() {
       <div class="sum-line"><span>Panier moyen T4 prévu / cible</span><b>${fmtE(c.prev12.panierT4, true)} / ${fmtE(c.panierCible, true)}</b></div>
       <div class="sum-line"><span>Rémunération nette prévue (12 mois)</span><b>${fmtE(c.prev12.remu)}</b></div>
     </div>
-  </div>`;
+  </div>
+  <div style="margin-top:16px">${qgTasksCard()}</div>`;
 }
 
 function chartDefaults() {
@@ -694,6 +695,7 @@ function viewSauvegarde() {
       <ul>
         <li>+100 XP par mois remis au réel, +20 si les tickets sont saisis, +50 si le CA dépasse le prévi, +30 si la trésorerie reste au-dessus du seuil.</li>
         <li>+25 XP par quête annexe, +10 XP par fiche de coût (jusqu’à 10).</li>
+        <li>Planning des tâches : +30 / +20 / +15 / +10 XP par tâche terminée selon sa priorité (P0 → P3), +5 si elle est bouclée avant sa date de fin.</li>
         <li>Succès : boss trimestriels vaincus, partenaires, panier, rémunération… (onglet <a href="#succes">Succès</a>).</li>
       </ul>
     </div>
