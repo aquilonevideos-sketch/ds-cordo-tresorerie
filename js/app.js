@@ -15,7 +15,9 @@ function load() {
   return defaultState();
 }
 function save() {
+  state.updatedAt = new Date().toISOString();
   try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) { /* ignoré */ }
+  scheduleSync();
 }
 function recompute() {
   calc = compute(state);
@@ -111,7 +113,7 @@ function render() {
   ui.charts = [];
   $('#view').innerHTML = VIEWS[ui.view]();
   document.querySelectorAll('#nav a').forEach(a => a.classList.toggle('active', a.dataset.view === ui.view));
-  $('#sidePlayer').innerHTML = `<div class="card">${playerCard(true)}<div class="bar-label"><span>XP</span><b>${nf0.format(xp.total)}</b></div><a href="#recompenses" class="bar-label" style="text-decoration:none;margin:0"><span>🎁 Points</span><b style="color:var(--gold)">${nf0.format(xp.points)}</b></a></div>`;
+  $('#sidePlayer').innerHTML = `<div class="card">${playerCard(true)}<div class="bar-label"><span>XP</span><b>${nf0.format(xp.total)}</b></div><a href="#recompenses" class="bar-label" style="text-decoration:none;margin:0"><span>🎁 Points</span><b style="color:var(--gold)">${nf0.format(xp.points)}</b></a>${syncBadge()}</div>`;
   if (ui.view === 'qg') drawQGCharts();
   if (ui.view === 'familles') drawFamChart();
   if (focusId) {
@@ -662,7 +664,8 @@ function viewSauvegarde() {
   const lb = state.lastBackup ? new Date(state.lastBackup) : null;
   const age = lb ? Math.floor((Date.now() - lb) / 86400000) : null;
   return `
-  <div class="page-head"><div><h1>Sauvegarde & guide</h1><div class="sub">Vos données restent dans ce navigateur. Pensez à télécharger une sauvegarde après chaque mission.</div></div></div>
+  <div class="page-head"><div><h1>Sauvegarde & guide</h1><div class="sub">Synchronisez vos appareils (PC, téléphone) et gardez une copie de secours de vos données.</div></div></div>
+  ${syncCard()}
   <div class="grid g2" style="margin-bottom:16px">
     <div class="card glow-cyan"><h2>💾 Sauvegarder / restaurer</h2>
       <div class="alert ${age == null || age > 35 ? 'warn' : 'ok'}">${lb ? `Dernière sauvegarde téléchargée le ${lb.toLocaleDateString('fr-FR')} (il y a ${age} j).` : 'Aucune sauvegarde téléchargée pour l’instant.'}</div>
@@ -867,3 +870,4 @@ window.addEventListener('hashchange', route);
 recompute();
 state.seenAch = Array.from(new Set([...state.seenAch, ...xp.ach.filter(a => a.ok).map(a => a.id)]));
 route();
+syncInit();

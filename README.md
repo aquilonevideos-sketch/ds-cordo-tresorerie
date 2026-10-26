@@ -21,7 +21,13 @@ Il reprend fidèlement le classeur Excel *Plan de trésorerie DS CORDO* (BE CONS
 
 ## Où sont les données ?
 
-Les montants saisis sont enregistrés **dans le navigateur** de l'appareil utilisé (aucun serveur, aucun compte). Pour ne rien perdre et pour passer d'un appareil à l'autre : *Sauvegarde & guide → Télécharger la sauvegarde*, puis *Restaurer* sur l'autre appareil.
+Les données sont enregistrées dans le navigateur de chaque appareil **et** peuvent être synchronisées entre le PC et le téléphone via un **dépôt GitHub privé** (onglet *Sauvegarde & guide → Synchronisation*) :
+
+1. Créer une clé d'accès GitHub *fine-grained* limitée au dépôt privé de données, avec la seule permission **Contents : Read and write**.
+2. La coller sur l'ordinateur (« Connecter cet appareil »).
+3. Sur le téléphone : scanner le **QR code** affiché par l'ordinateur.
+
+Ensuite, chaque saisie est envoyée automatiquement et récupérée à l'ouverture de l'outil sur l'autre appareil. La clé reste sur l'appareil et n'est jamais incluse dans les sauvegardes. La sauvegarde par fichier (.json) reste disponible en secours.
 
 ## Utilisation en local
 
@@ -40,5 +46,6 @@ js/data.js      hypothèses et lignes du plan (issues du fichier Excel)
 js/engine.js    moteur de calcul (formules du plan) + XP / succès
 js/planning.js  planning des tâches (Kanban, liste, frise, import/export Excel)
 js/rewards.js   boutique des récompenses
+js/sync.js      synchronisation PC ↔ téléphone (dépôt GitHub privé)
 js/app.js       interface
 ```
