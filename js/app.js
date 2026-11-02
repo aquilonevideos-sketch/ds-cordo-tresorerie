@@ -1,5 +1,7 @@
 // Interface de l'application « Quête de Trésorerie » — DS CORDO
 const STORE_KEY = 'dscordo-tresorerie-v1';
+// Version publiée : à changer (avec les ?v= de index.html et version.json) à chaque mise en ligne
+const APP_VERSION = '2026.11.02-2';
 const $ = (sel, root = document) => root.querySelector(sel);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -871,3 +873,21 @@ recompute();
 state.seenAch = Array.from(new Set([...state.seenAch, ...xp.ach.filter(a => a.ok).map(a => a.id)]));
 route();
 syncInit();
+
+// Mise à jour automatique : si une nouvelle version est en ligne, on recharge l'outil
+// (les données sont déjà enregistrées à chaque saisie, rien n'est perdu)
+async function checkUpdate() {
+  try {
+    const r = await fetch('version.json?t=' + Date.now(), { cache: 'no-store' });
+    if (!r.ok) return;
+    const { v } = await r.json();
+    if (!v || v === APP_VERSION) return;
+    const busy = document.querySelector('dialog[open]') || (document.activeElement && /INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName));
+    if (busy) { setTimeout(checkUpdate, 30000); return; }
+    // une seule tentative par version, pour ne jamais boucler si un cache résiste
+    try { if (sessionStorage.getItem('dscordo-maj') === v) return; sessionStorage.setItem('dscordo-maj', v); } catch (e) { /* ignoré */ }
+    location.replace(location.pathname + '?v=' + encodeURIComponent(v) + location.hash);
+  } catch (e) { /* hors ligne : on réessaiera plus tard */ }
+}
+checkUpdate();
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkUpdate(); });
