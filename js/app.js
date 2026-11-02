@@ -1,7 +1,7 @@
 // Interface de l'application « Quête de Trésorerie » — DS CORDO
 const STORE_KEY = 'dscordo-tresorerie-v1';
 // Version publiée : à changer (avec les ?v= de index.html et version.json) à chaque mise en ligne
-const APP_VERSION = '2026.11.02-4';
+const APP_VERSION = '2026.11.02-5';
 const $ = (sel, root = document) => root.querySelector(sel);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 

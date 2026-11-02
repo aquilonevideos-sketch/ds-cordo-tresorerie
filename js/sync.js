@@ -141,6 +141,8 @@ async function processInbox() {
     for (const b of box.boards || []) if (!p.boards.some(x => x.id === b.id)) p.boards.push({ id: b.id, name: b.name });
     for (const t of box.items || []) {
       if (!t.id || p.inboxDone.includes(t.id) || p.items.some(x => x.id === t.id)) continue;
+      // déjà présente (ex. importée par Excel) : pas de doublon
+      if (p.items.some(x => (x.title || '').trim() === (t.title || '').trim())) { p.inboxDone.push(t.id); continue; }
       p.items.push({ status: 'Pas commencé', prio: 'P2', owner: '', start: '', end: '', step: '', deliverable: '', notes: '', repeat: '', doneAt: null, ...t });
       p.inboxDone.push(t.id);
       added++;

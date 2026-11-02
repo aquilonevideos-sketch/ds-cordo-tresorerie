@@ -355,7 +355,7 @@ async function importTasksXLSX(file) {
       while (p.boards.some(x => x.name === name)) name = `${b.name} (${i++})`;
       const id = 'b_' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
       p.boards.push({ id, name });
-      for (const t of b.items) p.items.push({ id: newTaskId(), board: id, doneAt: t.status === 'Terminé' ? (t.end || todayISO()) : null, ...(t.status === 'Terminé' ? { noXp: true } : {}), ...t });
+      for (const t of b.items) if (!p.items.some(x => (x.title || '').trim() === t.title.trim() && x.board !== id)) p.items.push({ id: newTaskId(), board: id, doneAt: t.status === 'Terminé' ? (t.end || todayISO()) : null, ...(t.status === 'Terminé' ? { noXp: true } : {}), ...t });
     }
     toast('⬆', 'Planning importé', `${total} tâches ajoutées`, true);
     commit();
