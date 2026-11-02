@@ -2,8 +2,45 @@
 // vues Kanban / Liste / Frise, fiche tâche, import / export Excel.
 
 const XLSX_URL = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
-const TASK_COLS = ['Tâche', 'Priorité', 'Propriétaire', 'État', 'Date de début', 'Date de fin', 'Étape', 'Livrable', 'Notes'];
-const TASK_KEYS = ['title', 'prio', 'owner', 'status', 'start', 'end', 'step', 'deliverable', 'notes'];
+const TASK_COLS = ['Tâche', 'Priorité', 'Propriétaire', 'État', 'Date de début', 'Date de fin', 'Étape', 'Livrable', 'Notes', 'Répétition'];
+const TASK_KEYS = ['title', 'prio', 'owner', 'status', 'start', 'end', 'step', 'deliverable', 'notes', 'repeat'];
+// Tâches répétitives : quand une occurrence passe à « Terminé », la suivante est créée automatiquement
+const REPEATS = [
+  { id: '', label: 'Aucune (tâche unique)', short: '' },
+  { id: 'week', label: 'Chaque semaine', short: 'Hebdo' },
+  { id: 'month', label: 'Chaque mois', short: 'Mensuelle' },
+  { id: 'quarter', label: 'Chaque trimestre', short: 'Trimestrielle' },
+  { id: 'year', label: 'Chaque année', short: 'Annuelle' },
+];
+const repeatOf = id => REPEATS.find(r => r.id === (id || '')) || REPEATS[0];
+const repeatTag = t => (t.repeat ? `<span class="tag info" title="${repeatOf(t.repeat).label}">🔁 ${repeatOf(t.repeat).short}</span>` : '');
+
+// Décale une date ISO d'une période (le 31 devient le dernier jour du mois s'il n'existe pas)
+function addPeriod(iso, rep) {
+  if (!iso || !rep) return iso;
+  const d = new Date(iso + 'T12:00:00');
+  if (rep === 'week') d.setDate(d.getDate() + 7);
+  else {
+    const months = rep === 'month' ? 1 : rep === 'quarter' ? 3 : 12;
+    const day = d.getDate();
+    d.setDate(1);
+    d.setMonth(d.getMonth() + months);
+    d.setDate(Math.min(day, new Date(d.getFullYear(), d.getMonth() + 1, 0).getDate()));
+  }
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+}
+
+function createNextOccurrence(t) {
+  if (!t.repeat) return null;
+  // déjà créée (tâche rouverte puis terminée à nouveau) : pas de doublon
+  if (t.nextId && plan().items.some(x => x.id === t.nextId)) return null;
+  const next = { ...t, id: newTaskId(), status: 'Pas commencé', doneAt: null,
+    start: addPeriod(t.start, t.repeat), end: addPeriod(t.end || t.start || todayISO(), t.repeat) };
+  delete next.nextId; delete next.example; delete next.noXp;
+  t.nextId = next.id;
+  plan().items.push(next);
+  return next;
+}
 
 const plan = () => state.planning;
 const taskUI = { board: 'all', view: 'kanban', owner: '', prio: '', q: '', hideDone: false, dragId: null };
@@ -35,7 +72,7 @@ const byPrioThenEnd = (a, b) => (a.prio || 'P9').localeCompare(b.prio || 'P9') |
 function taskCard(t) {
   const p = prioOf(t.prio), dl = taskDeadline(t);
   return `<div class="task ${t.status === 'Terminé' ? 'is-done' : ''}" draggable="true" data-task-id="${t.id}" data-task-edit="${t.id}">
-    <div class="task-top">${p ? `<span class="tag prio-${p.id}">${p.icon} ${p.id}</span>` : ''}${t.example ? '<span class="tag">exemple</span>' : ''}${dl ? `<span class="tag ${dl.cls}">${dl.txt}</span>` : ''}</div>
+    <div class="task-top">${p ? `<span class="tag prio-${p.id}">${p.icon} ${p.id}</span>` : ''}${repeatTag(t)}${t.example ? '<span class="tag">exemple</span>' : ''}${dl ? `<span class="tag ${dl.cls}">${dl.txt}</span>` : ''}</div>
     <div class="task-title">${esc(t.title)}</div>
     ${t.step ? `<div class="task-step">➜ ${esc(t.step)}</div>` : ''}
     <div class="task-meta">${t.owner ? `<span>👤 ${esc(t.owner)}</span>` : ''}${t.start || t.end ? `<span>📅 ${fmtD(t.start)}${t.end ? ' → ' + fmtD(t.end) : ''}</span>` : ''}
@@ -62,7 +99,7 @@ function viewTaskList(tasks) {
       <td style="text-align:left">${esc(t.owner || '')}</td>
       <td><select class="inp sel-mini" data-task-status="${t.id}">${TASK_STATUSES.map(x => `<option ${x.id === t.status ? 'selected' : ''}>${x.id}</option>`).join('')}</select></td>
       <td>${fmtD(t.start)}</td><td>${fmtD(t.end)} ${dl ? `<span class="tag ${dl.cls}">${dl.txt}</span>` : ''}</td>
-      <td class="wrap">${esc(t.step || '')}</td><td class="wrap">${esc(t.deliverable || '')}</td><td class="wrap muted">${esc(t.notes || '')}</td>
+      <td class="wrap">${esc(t.step || '')}</td><td class="wrap">${esc(t.deliverable || '')}</td><td class="wrap muted">${esc(t.notes || '')}</td><td>${repeatTag(t)}</td>
       ${taskUI.board === 'all' ? `<td style="text-align:left" class="muted">${esc(boardName(t.board))}</td>` : ''}
     </tr>`;
   }).join('');
@@ -190,6 +227,8 @@ function openTask(id) {
       <div class="field"><label>Tableau</label><select class="inp" name="board">${p.boards.map(b => `<option value="${b.id}" ${b.id === t.board ? 'selected' : ''}>${esc(b.name)}</option>`).join('')}</select></div>
       <div class="field"><label>Date de début</label><input class="inp" type="date" name="start" value="${t.start || ''}"></div>
       <div class="field"><label>Date de fin</label><input class="inp" type="date" name="end" value="${t.end || ''}"></div>
+      <div class="field"><label>🔁 Répétition</label><select class="inp" name="repeat">${REPEATS.map(r => `<option value="${r.id}" ${r.id === (t.repeat || '') ? 'selected' : ''}>${r.label}</option>`).join('')}</select>
+        <div class="hint">Quand la tâche est terminée, la suivante est créée automatiquement avec les dates décalées.</div></div>
     </div>
     <div class="field" style="margin-top:12px"><label>Étape (prochaine action)</label><textarea class="inp" name="step" rows="2">${esc(t.step)}</textarea></div>
     <div class="field" style="margin-top:12px"><label>Livrable</label><input class="inp" name="deliverable" value="${esc(t.deliverable)}"></div>
@@ -233,6 +272,8 @@ function setStatus(t, status, prev) {
     const p = prioOf(t.prio) || TASK_PRIOS[3];
     const ontime = t.end && t.doneAt <= t.end;
     toast('🏁', 'Tâche terminée !', `${t.title.slice(0, 60)} · +${p.xp + (ontime ? 5 : 0)} XP${ontime ? ' (dans les délais)' : ''}`);
+    const next = createNextOccurrence(t);
+    if (next) setTimeout(() => toast('🔁', 'Prochaine occurrence créée', `${next.title.slice(0, 50)} · à faire ${next.end ? 'avant le ' + fmtD(next.end) : 'à partir du ' + fmtD(next.start)}`, true), 400);
   } else if (status !== 'Terminé') t.doneAt = null;
 }
 
@@ -268,9 +309,9 @@ async function exportTasksXLSX() {
   const p = plan();
   const used = new Set();
   for (const b of p.boards) {
-    const rows = p.items.filter(t => t.board === b.id).map(t => TASK_KEYS.map(k => ((k === 'start' || k === 'end') && t[k] ? new Date(t[k] + 'T12:00:00') : t[k] || '')));
+    const rows = p.items.filter(t => t.board === b.id).map(t => TASK_KEYS.map(k => ((k === 'start' || k === 'end') && t[k] ? new Date(t[k] + 'T12:00:00') : k === 'repeat' ? (t.repeat ? repeatOf(t.repeat).label : '') : t[k] || '')));
     const ws = X.utils.aoa_to_sheet([TASK_COLS, ...rows], { cellDates: true, dateNF: 'dd/mm/yyyy' });
-    ws['!cols'] = [{ wch: 45 }, { wch: 9 }, { wch: 16 }, { wch: 13 }, { wch: 12 }, { wch: 12 }, { wch: 40 }, { wch: 20 }, { wch: 40 }];
+    ws['!cols'] = [{ wch: 45 }, { wch: 9 }, { wch: 16 }, { wch: 13 }, { wch: 12 }, { wch: 12 }, { wch: 40 }, { wch: 20 }, { wch: 40 }, { wch: 18 }];
     let name = b.name.replace(/[\\/?*[\]:]/g, ' ').slice(0, 31).trim() || 'Tableau';
     while (used.has(name)) name = name.slice(0, 28) + ' ' + (used.size + 1);
     used.add(name);
@@ -297,6 +338,8 @@ async function importTasksXLSX(file) {
         const t = {};
         TASK_KEYS.forEach((k, i) => { const v = col[i] >= 0 ? r[col[i]] : ''; t[k] = k === 'start' || k === 'end' ? parseDateCell(v) : String(v ?? '').trim(); });
         if (!TASK_PRIOS.some(p => p.id === t.prio.toUpperCase())) t.prio = ''; else t.prio = t.prio.toUpperCase();
+        const rp = REPEATS.find(x => x.id && [x.label, x.short, x.id].some(l => norm(l) === norm(t.repeat)));
+        t.repeat = rp ? rp.id : (/semaine|hebdo/.test(norm(t.repeat)) ? 'week' : /mois|mensuel/.test(norm(t.repeat)) ? 'month' : /trimestr/.test(norm(t.repeat)) ? 'quarter' : /an(nee|nuel)/.test(norm(t.repeat)) ? 'year' : '');
         const st = TASK_STATUSES.find(s => norm(s.id) === norm(t.status));
         t.status = st ? st.id : 'Pas commencé';
         return t;
@@ -338,7 +381,7 @@ document.addEventListener('click', e => {
   if (d.taskDup) {
     const src = p.items.find(x => x.id === d.taskDup);
     const copy = { ...src, id: newTaskId(), title: src.title + ' (copie)', status: 'Pas commencé', doneAt: null };
-    delete copy.example;
+    delete copy.example; delete copy.nextId;
     p.items.push(copy);
     document.getElementById('taskDlg').close();
     commit();

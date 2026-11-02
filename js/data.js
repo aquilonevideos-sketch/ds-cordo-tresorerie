@@ -223,7 +223,7 @@ const EXAMPLE_TASKS = {
       start: '2026-10-15', end: '2026-10-31', step: 'En attente de réponse', deliverable: 'Régime confirmé', notes: 'Exemple de tâche bloquée' },
     { board: 'b_gestion', title: 'Réaliser 10 fiches de coût (cordonnerie, clés)', prio: 'P1', owner: 'Déborah', status: 'Pas commencé',
       start: '2026-11-15', end: '2027-01-31', step: 'Chronométrer les prestations', deliverable: '10 fiches', notes: 'SMART n°04' },
-    { board: 'b_gestion', title: 'Remise au réel de novembre (rituel du 10)', prio: 'P1', owner: 'Déborah', status: 'Pas commencé',
+    { board: 'b_gestion', title: 'Remise au réel du mois (rituel du 10)', prio: 'P1', owner: 'Déborah', status: 'Pas commencé', repeat: 'month',
       start: '2026-12-01', end: '2026-12-10', step: 'Relevé bancaire + caisse + Pennylane', deliverable: 'Mission validée', notes: '' },
     { board: 'b_gestion', title: 'Ouvrir le compte Pennylane du nouvel atelier', prio: 'P3', owner: 'Déborah', status: 'Terminé',
       start: '2026-10-01', end: '2026-10-10', step: '', deliverable: 'Compte actif', notes: '' },

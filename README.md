@@ -11,7 +11,7 @@ Il reprend fidèlement le classeur Excel *Plan de trésorerie DS CORDO* (BE CONS
 | 🏠 **QG** | Niveau & XP, trésorerie en « points de vie », prochaine mission (rituel du 10), boss du trimestre, indicateurs SMART, graphiques, alertes |
 | ⚔️ **Mission du mois** | Saisie du réel du mois (montants HT encaissés / payés, tickets de caisse, TVA prélevée) puis validation du mois |
 | 🗺️ **Plan 12 mois** | Tableau complet Prévi / Réel / Écart, cumuls « à date », prévi modifiable ligne par ligne, export CSV |
-| 📋 **Planning des tâches** | Tableaux de tâches (Tâche, Priorité P0→P3, Propriétaire, État, dates, Étape, Livrable, Notes) en vues Kanban (glisser-déposer), Liste et Frise ; retards et échéances signalés au QG ; import / export Excel au format du modèle de planning ; XP à chaque tâche terminée |
+| 📋 **Planning des tâches** | Tableaux de tâches (Tâche, Priorité P0→P3, Propriétaire, État, dates, Étape, Livrable, Notes, Répétition) en vues Kanban (glisser-déposer), Liste et Frise ; retards et échéances signalés au QG ; import / export Excel au format du modèle de planning ; XP à chaque tâche terminée ; tâches répétitives (semaine, mois, trimestre, année) recréées automatiquement |
 | 🎯 **Quêtes & Boss** | Les 6 objectifs SMART, les 4 bilans trimestriels (15 / 18 / 20 / 22 k€), partenaires actifs, fiches de coût, quêtes annexes |
 | 🧩 **Familles** | CA, achats et taux de marge réels des 8 familles vs taux cible |
 | 🏆 **Succès** | Badges, niveaux et journal d'XP |
