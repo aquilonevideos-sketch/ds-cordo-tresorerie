@@ -23,6 +23,7 @@ function defaultState() {
     lastBackup: null,
     planning: seedPlanning(),
     rewards: { items: clone(DEFAULT_REWARDS), claims: [] },
+    calendar: { events: clone(DEFAULT_CAL_EVENTS), removed: [] },
   };
 }
 
@@ -42,6 +43,15 @@ function normalizeState(s) {
   for (const k of ['tickets', 'tvaPayOv']) if (!Array.isArray(out[k]) || out[k].length !== N) out[k] = empty();
   if (!Array.isArray(out.partners) || out.partners.length !== 4) out.partners = [null, null, null, null];
   if (!out.rewards || !Array.isArray(out.rewards.items) || !Array.isArray(out.rewards.claims)) out.rewards = { items: clone(DEFAULT_REWARDS), claims: [] };
+  if (!out.calendar || !Array.isArray(out.calendar.events)) out.calendar = { events: [], removed: [] };
+  out.calendar.removed = out.calendar.removed || [];
+  // nouveaux temps forts ajoutés dans une mise à jour : proposés automatiquement (sauf s'ils ont été supprimés)
+  for (const ev of DEFAULT_CAL_EVENTS) {
+    const mine = out.calendar.events.find(x => x.id === ev.id);
+    if (!mine && !out.calendar.removed.includes(ev.id)) out.calendar.events.push(clone(ev));
+    // date calculée automatiquement : on garde la règle à jour
+    else if (mine && mine.rule && !['fixed', 'once'].includes(mine.rule.type)) mine.rule = clone(ev.rule);
+  }
   if (!out.planning || !Array.isArray(out.planning.boards) || !Array.isArray(out.planning.items)) out.planning = seedPlanning();
   return out;
 }

@@ -408,3 +408,20 @@ code { background: var(--bg2); padding: 1px 6px; border-radius: 6px; font-size: 
 .avatar { padding: 2px; }
 .rw-line { flex-wrap: wrap; align-items: center; }
 .rw-line > * { white-space: nowrap; }
+
+/* ——— Calendrier commercial ——— */
+.cal-months { display: grid; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); gap: 16px; align-items: start; }
+.cal-month { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; box-shadow: var(--shadow); }
+.cal-month h2 { margin-bottom: 10px; }
+.cal-ev { display: flex; gap: 12px; padding: 10px 0; border-top: 1px dashed var(--line-soft); }
+.cal-ev:first-of-type { border-top: 0; }
+.cal-ev.st-past { opacity: .5; }
+.cal-date { width: 52px; flex: none; text-align: center; border-radius: 12px; background: var(--bg2); padding: 6px 0; align-self: flex-start; }
+.cal-ev.st-prep .cal-date { background: rgba(201, 106, 6, .12); }
+.cal-ev.st-now .cal-date { background: rgba(242, 182, 50, .25); }
+.cal-day { font: 700 20px/1 var(--head); }
+.cal-mon { font-size: 11px; text-transform: uppercase; color: var(--muted); letter-spacing: .05em; }
+.cal-body { flex: 1; min-width: 0; }
+.cal-name { font: 700 15px var(--head); }
+.cal-idea { font-size: 13px; margin-top: 6px; color: var(--text); background: rgba(124, 201, 180, .14); border-radius: 8px; padding: 6px 10px; }
+@media (max-width: 760px) { .cal-months { grid-template-columns: 1fr; } }

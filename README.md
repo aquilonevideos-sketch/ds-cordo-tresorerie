@@ -12,6 +12,7 @@ Il reprend fidèlement le classeur Excel *Plan de trésorerie DS CORDO* (BE CONS
 | ⚔️ **Mission du mois** | Saisie du réel du mois (montants HT encaissés / payés, tickets de caisse, TVA prélevée) puis validation du mois |
 | 🗺️ **Plan 12 mois** | Tableau complet Prévi / Réel / Écart, cumuls « à date », prévi modifiable ligne par ligne, export CSV |
 | 📋 **Planning des tâches** | Tableaux de tâches (Tâche, Priorité P0→P3, Propriétaire, État, dates, Étape, Livrable, Notes, Répétition) en vues Kanban (glisser-déposer), Liste et Frise ; retards et échéances signalés au QG ; import / export Excel au format du modèle de planning ; XP à chaque tâche terminée ; tâches répétitives (semaine, mois, trimestre, année) recréées automatiquement |
+| 📅 **Calendrier commercial** | Temps forts de l'année (Black Friday, Noël, soldes, Saint-Valentin, fêtes des mères / pères / grands-parents, rentrée, saison des bottes…) avec dates recalculées chaque année, période de préparation, idées d'actions par famille ; création en un clic de la tâche de préparation dans le planning ; temps forts personnalisables |
 | 🎯 **Quêtes & Boss** | Les 6 objectifs SMART, les 4 bilans trimestriels (15 / 18 / 20 / 22 k€), partenaires actifs, fiches de coût, quêtes annexes |
 | 🧩 **Familles** | CA, achats et taux de marge réels des 8 familles vs taux cible |
 | 🏆 **Succès** | Badges, niveaux et journal d'XP |
@@ -45,6 +46,7 @@ css/style.css   thème clair aux couleurs de Marselle
 js/data.js      hypothèses et lignes du plan (issues du fichier Excel)
 js/engine.js    moteur de calcul (formules du plan) + XP / succès
 js/planning.js  planning des tâches (Kanban, liste, frise, import/export Excel)
+js/calendar.js  calendrier des temps commerciaux
 js/rewards.js   boutique des récompenses
 js/sync.js      synchronisation PC ↔ téléphone (dépôt GitHub privé)
 js/app.js       interface

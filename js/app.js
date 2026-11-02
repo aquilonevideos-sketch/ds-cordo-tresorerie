@@ -1,7 +1,7 @@
 // Interface de l'application « Quête de Trésorerie » — DS CORDO
 const STORE_KEY = 'dscordo-tresorerie-v1';
 // Version publiée : à changer (avec les ?v= de index.html et version.json) à chaque mise en ligne
-const APP_VERSION = '2026.11.02-3';
+const APP_VERSION = '2026.11.02-4';
 const $ = (sel, root = document) => root.querySelector(sel);
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
@@ -104,7 +104,7 @@ function playerCard(compact) {
 // ————— Vues —————
 const VIEWS = {
   qg: viewQG, mission: viewMission, plan: viewPlan, quetes: viewQuetes,
-  familles: viewFamilles, succes: viewSucces, planning: viewPlanning, recompenses: viewRecompenses, reglages: viewReglages, sauvegarde: viewSauvegarde,
+  familles: viewFamilles, succes: viewSucces, planning: viewPlanning, recompenses: viewRecompenses, calendrier: viewCalendrier, reglages: viewReglages, sauvegarde: viewSauvegarde,
 };
 
 function render() {
@@ -218,7 +218,7 @@ function viewQG() {
       <div class="sum-line"><span>Rémunération nette prévue (12 mois)</span><b>${fmtE(c.prev12.remu)}</b></div>
     </div>
   </div>
-  <div style="margin-top:16px">${qgTasksCard()}</div>`;
+  <div class="grid g2" style="margin-top:16px">${qgTasksCard()}${qgCalendarCard()}</div>`;
 }
 
 function chartDefaults() {

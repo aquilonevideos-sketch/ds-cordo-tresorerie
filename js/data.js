@@ -242,3 +242,43 @@ const DEFAULT_REWARDS = [
   { id: 'r_off', icon: '🌴', name: 'Une journée off', desc: "Une journée rien qu'à soi (à caler sur un jour calme).", cost: 1000, minLevel: 4, repeatable: true },
   { id: 'r_weekend', icon: '🎁', name: 'Un week-end découverte', desc: "La grande récompense de l'année.", cost: 2000, minLevel: 5, repeatable: false },
 ];
+
+// ————— Calendrier des temps commerciaux —————
+// rule : fixed {m, d} · nth {m, wd, n} (wd 0 = dimanche, n = -1 pour le dernier) · mothers · blackfriday · easter {off}
+//        soldesHiver / soldesEte (règles nationales du Code de commerce)
+// m = mois de 1 à 12 · lead = jours de préparation avant la date · days = durée (soldes…)
+// fam = familles concernées (voir FAMILIES)
+const DEFAULT_CAL_EVENTS = [
+  { id: 'c_blackfriday', icon: '🖤', name: 'Black Friday', rule: { type: 'blackfriday' }, lead: 14, days: 4,
+    fam: ['maro', 'acces', 'clesVente'], idea: "Une offre courte et claire (ex. -15 % sur la maroquinerie ou un kit d'entretien offert dès 30 € d'achat). Affiche en vitrine + post Facebook la veille." },
+  { id: 'c_noel', icon: '🎄', name: 'Noël', rule: { type: 'fixed', m: 12, d: 25 }, lead: 35,
+    fam: ['maro', 'acces', 'clesVente', 'soins'], idea: "Coffrets cadeaux (petite maroquinerie, kits de cirage), cartes-cadeaux « ressemelage » ou « entretien », porte-clés. Vitrine de fêtes dès le 1er décembre." },
+  { id: 'c_soldes_hiver', icon: '🏷️', name: "Soldes d'hiver", rule: { type: 'soldesHiver' }, lead: 14, days: 28,
+    fam: ['maro', 'acces', 'divers'], idea: "Déstocker la maroquinerie et les accessoires de fin de saison. Dates nationales : vérifier les éventuelles dérogations du Var." },
+  { id: 'c_valentin', icon: '💝', name: 'Saint-Valentin', rule: { type: 'fixed', m: 2, d: 14 }, lead: 14,
+    fam: ['maro', 'acces', 'clesVente'], idea: "Idées cadeaux pour lui et pour elle : portefeuilles, ceintures, porte-clés gravés. Offre « duo »." },
+  { id: 'c_grands_meres', icon: '👵', name: 'Fête des grands-mères', rule: { type: 'nth', m: 3, wd: 0, n: 1 }, lead: 10,
+    fam: ['maro', 'acces'], idea: 'Petite maroquinerie et accessoires à offrir, carte-cadeau.' },
+  { id: 'c_printemps', icon: '🌸', name: 'Arrivée du printemps', rule: { type: 'fixed', m: 3, d: 20 }, lead: 10,
+    fam: ['soins', 'cordo'], idea: 'Campagne entretien : nettoyage, imperméabilisation, remise en état des sandales et chaussures d’été.' },
+  { id: 'c_paques', icon: '🐣', name: 'Pâques', rule: { type: 'easter', off: 0 }, lead: 10,
+    fam: ['acces', 'divers'], idea: 'Vacances de printemps : rappeler les doubles de clés pour les voisins / la famille avant de partir.' },
+  { id: 'c_meres', icon: '💐', name: 'Fête des mères', rule: { type: 'mothers' }, lead: 21,
+    fam: ['maro', 'acces', 'soins'], idea: 'Sacs, portefeuilles, cartes-cadeaux « soin des chaussures et des sacs ». Vitrine dédiée 2 semaines avant.' },
+  { id: 'c_peres', icon: '👔', name: 'Fête des pères', rule: { type: 'nth', m: 6, wd: 0, n: 3 }, lead: 21,
+    fam: ['maro', 'acces', 'soins', 'clesVente'], idea: 'Ceintures, portefeuilles, coffrets de cirage, porte-clés. Mettre en avant le ressemelage « comme neuf ».' },
+  { id: 'c_soldes_ete', icon: '☀️', name: "Soldes d'été", rule: { type: 'soldesEte' }, lead: 14, days: 28,
+    fam: ['maro', 'acces', 'divers'], idea: 'Déstockage de la maroquinerie et des accessoires. Dates nationales : vérifier les dérogations du Var.' },
+  { id: 'c_vacances', icon: '🧳', name: "Départs en vacances d'été", rule: { type: 'fixed', m: 7, d: 4 }, lead: 14,
+    fam: ['clesRepro', 'maro', 'cordo'], idea: 'Réparation de valises et de sacs, doubles de clés à laisser à un proche, sandales à remettre en état.' },
+  { id: 'c_rentree', icon: '🎒', name: 'Rentrée scolaire', rule: { type: 'fixed', m: 9, d: 1 }, lead: 14,
+    fam: ['clesRepro', 'maro', 'cordo'], idea: 'Doubles de clés pour les enfants, réparation de cartables et de sacs, ressemelage des chaussures de rentrée.' },
+  { id: 'c_grands_peres', icon: '👴', name: 'Fête des grands-pères', rule: { type: 'nth', m: 10, wd: 0, n: 1 }, lead: 10,
+    fam: ['maro', 'acces'], idea: 'Ceintures, portefeuilles, kits de cirage à offrir.' },
+  { id: 'c_bottes', icon: '🥾', name: "Saison des bottes (ressemelages d'hiver)", rule: { type: 'fixed', m: 10, d: 1 }, lead: 14,
+    fam: ['cordo', 'soins'], idea: 'Campagne « préparez vos bottes » : ressemelage, imperméabilisation, patins. Avant / après en vitrine.' },
+  { id: 'c_reparation', icon: '🔧', name: 'Journée internationale de la réparation', rule: { type: 'nth', m: 10, wd: 6, n: 3 }, lead: 14,
+    fam: ['cordo', 'couture'], idea: 'Communiquer sur le Bonus Réparation (réduction immédiate pour le client) et montrer des avant / après.' },
+  { id: 'c_anniversaire', icon: '🎂', name: "Anniversaire de l'atelier", rule: { type: 'fixed', m: 11, d: 14, from: 2027 }, lead: 21,
+    fam: ['cordo', 'clesRepro', 'maro'], idea: 'Remercier les clients : offre fidélité, petit événement en boutique, post Facebook « 1 an déjà ».' },
+];
