@@ -49,7 +49,7 @@ function commit(rerender = true) {
 function celebrate(big) {
   if (typeof confetti !== 'function') return;
   confetti({ particleCount: big ? 180 : 90, spread: big ? 100 : 70, origin: { y: .7 },
-    colors: ['#ff4fd8', '#3ee8ff', '#ffcc3d', '#45f0a0', '#8b6cff'] });
+    colors: ['#7cc9b4', '#c7288f', '#f2b632', '#6b4ce6', '#0e8f84'] });
 }
 
 function toast(icon, title, desc, plain) {
@@ -221,9 +221,9 @@ function viewQG() {
 
 function chartDefaults() {
   if (typeof Chart === 'undefined') return false;
-  Chart.defaults.color = '#9a93c9';
+  Chart.defaults.color = '#625c7d';
   Chart.defaults.font.family = 'Inter, sans-serif';
-  Chart.defaults.borderColor = 'rgba(47,41,96,.6)';
+  Chart.defaults.borderColor = 'rgba(34,29,58,.08)';
   return true;
 }
 const moneyTick = { callback: v => nf0.format(v) + ' €' };
@@ -235,17 +235,17 @@ function drawQGCharts() {
   ui.charts.push(new Chart($('#chTreso'), {
     type: 'line',
     data: { labels: MONTHS, datasets: [
-      { label: 'Prévi', data: calc.P.map(r => r.fin), borderColor: '#8b6cff', backgroundColor: 'rgba(139,108,255,.15)', fill: true, tension: .35, borderDash: [5, 4] },
-      { label: 'Réel', data: calc.R.map((r, m) => (m < n ? r.fin : null)), borderColor: '#3ee8ff', backgroundColor: '#3ee8ff', tension: .35, borderWidth: 3, pointRadius: 4 },
-      { label: 'Seuil de vigilance', data: MONTHS.map(() => state.hyp.seuilAlerte), borderColor: '#ffa53d', borderWidth: 1.5, pointRadius: 0, borderDash: [2, 3] },
+      { label: 'Prévi', data: calc.P.map(r => r.fin), borderColor: '#6b4ce6', backgroundColor: 'rgba(107,76,230,.08)', fill: true, tension: .35, borderDash: [5, 4] },
+      { label: 'Réel', data: calc.R.map((r, m) => (m < n ? r.fin : null)), borderColor: '#0e8f84', backgroundColor: '#0e8f84', tension: .35, borderWidth: 3, pointRadius: 4 },
+      { label: 'Seuil de vigilance', data: MONTHS.map(() => state.hyp.seuilAlerte), borderColor: '#c96a06', borderWidth: 1.5, pointRadius: 0, borderDash: [2, 3] },
     ] },
     options: { maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { ticks: moneyTick } }, plugins: { tooltip: tipMoney } },
   }));
   ui.charts.push(new Chart($('#chCA'), {
     type: 'bar',
     data: { labels: MONTHS, datasets: [
-      { label: 'Prévi', data: calc.P.map(r => r.ca), backgroundColor: 'rgba(139,108,255,.45)', borderRadius: 6 },
-      { label: 'Réel', data: calc.R.map((r, m) => (m < n ? r.ca : null)), backgroundColor: '#ff4fd8', borderRadius: 6 },
+      { label: 'Prévi', data: calc.P.map(r => r.ca), backgroundColor: 'rgba(107,76,230,.28)', borderRadius: 6 },
+      { label: 'Réel', data: calc.R.map((r, m) => (m < n ? r.ca : null)), backgroundColor: '#0e8f84', borderRadius: 6 },
     ] },
     options: { maintainAspectRatio: false, interaction: { mode: 'index', intersect: false }, scales: { y: { ticks: moneyTick } }, plugins: { tooltip: tipMoney } },
   }));
@@ -545,8 +545,8 @@ function drawFamChart() {
   ui.charts.push(new Chart($('#chFam'), {
     type: 'bar',
     data: { labels: fs.map(f => f.short), datasets: [
-      { label: 'Taux MB cible', data: fs.map(f => f.tauxCible * 100), backgroundColor: 'rgba(139,108,255,.45)', borderRadius: 6 },
-      { label: 'Taux MB réel', data: fs.map(f => (f.caReelDate ? f.tauxReel * 100 : null)), backgroundColor: '#45f0a0', borderRadius: 6 },
+      { label: 'Taux MB cible', data: fs.map(f => f.tauxCible * 100), backgroundColor: 'rgba(107,76,230,.28)', borderRadius: 6 },
+      { label: 'Taux MB réel', data: fs.map(f => (f.caReelDate ? f.tauxReel * 100 : null)), backgroundColor: '#10a37a', borderRadius: 6 },
     ] },
     options: { maintainAspectRatio: false, scales: { y: { min: 0, max: 100, ticks: { callback: v => v + ' %' } } },
       plugins: { tooltip: { callbacks: { label: ctx => `${ctx.dataset.label} : ${ctx.parsed.y.toFixed(1).replace('.', ',')} %` } } } },

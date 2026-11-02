@@ -41,7 +41,7 @@ npx serve .
 
 ```
 index.html      page unique
-css/style.css   thème « arcade »
+css/style.css   thème clair aux couleurs de Marselle
 js/data.js      hypothèses et lignes du plan (issues du fichier Excel)
 js/engine.js    moteur de calcul (formules du plan) + XP / succès
 js/planning.js  planning des tâches (Kanban, liste, frise, import/export Excel)
