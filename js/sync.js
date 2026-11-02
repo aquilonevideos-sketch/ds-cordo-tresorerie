@@ -31,9 +31,9 @@ function b64decode(b64) {
   return new TextDecoder().decode(Uint8Array.from(bin, c => c.charCodeAt(0)));
 }
 
-async function gh(method, body) {
+async function gh(method, body, path) {
   const c = sync.cfg;
-  const url = `https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${c.path.split('/').map(encodeURIComponent).join('/')}` +
+  const url = `https://api.github.com/repos/${encodeURIComponent(c.owner)}/${encodeURIComponent(c.repo)}/contents/${(path || c.path).split('/').map(encodeURIComponent).join('/')}` +
     (method === 'GET' ? `?ref=${encodeURIComponent(c.branch)}` : '');
   const res = await fetch(url, {
     method,
@@ -111,6 +111,7 @@ async function syncNow(opts = {}) {
     sync.cfg.lastOk = new Date().toISOString();
     saveSyncCfg();
     setSyncStatus('ok', 'Synchronisé');
+    processInbox();
   } catch (e) {
     if (e.status === 409 && !opts.retried) { sync.busy = false; return syncNow({ ...opts, retried: true }); }
     const why = e.status === 401 ? 'Jeton invalide ou expiré' : e.status === 403 ? 'Accès refusé (droits du jeton)' : e.status === 404 ? 'Dépôt introuvable' : !navigator.onLine ? 'Hors ligne' : e.message;
@@ -120,6 +121,36 @@ async function syncNow(opts = {}) {
     sync.busy = false;
     if (sync.again) { sync.again = false; scheduleSync(500); }
   }
+}
+
+// ————— Boîte aux lettres —————
+// Un fichier « boite-aux-lettres.json » déposé dans le dépôt privé (par Sébastien, par exemple) contient des
+// tâches à ajouter : l'outil les ajoute au planning à la prochaine synchro, puis supprime le fichier.
+const INBOX_PATH = 'boite-aux-lettres.json';
+let inboxBusy = false;
+async function processInbox() {
+  if (!syncOn() || inboxBusy) return;
+  inboxBusy = true;
+  try {
+    const d = await gh('GET', null, INBOX_PATH);
+    if (!d) return;
+    const box = JSON.parse(b64decode(d.content));
+    const p = state.planning;
+    p.inboxDone = p.inboxDone || [];
+    let added = 0;
+    for (const b of box.boards || []) if (!p.boards.some(x => x.id === b.id)) p.boards.push({ id: b.id, name: b.name });
+    for (const t of box.items || []) {
+      if (!t.id || p.inboxDone.includes(t.id) || p.items.some(x => x.id === t.id)) continue;
+      p.items.push({ status: 'Pas commencé', prio: 'P2', owner: '', start: '', end: '', step: '', deliverable: '', notes: '', repeat: '', doneAt: null, ...t });
+      p.inboxDone.push(t.id);
+      added++;
+    }
+    if (added) {
+      toast('📬', `${added} nouvelle${added > 1 ? 's' : ''} tâche${added > 1 ? 's' : ''} reçue${added > 1 ? 's' : ''}`, box.message || 'Ajoutée(s) au planning des tâches.');
+      commit();
+    }
+    await gh('DELETE', { message: 'Tâches importées dans l’outil', sha: d.sha, branch: sync.cfg.branch }, INBOX_PATH).catch(() => {});
+  } catch (e) { /* on réessaiera à la prochaine synchro */ } finally { inboxBusy = false; }
 }
 
 function backupConflict(other) {
@@ -211,6 +242,7 @@ async function connectSync(cfg) {
     sync.cfg.lastOk = new Date().toISOString();
     saveSyncCfg();
     setSyncStatus('ok', 'Synchronisé');
+    processInbox();
     toast('☁️', 'Appareil connecté', 'Les données se synchronisent désormais automatiquement.', true);
     celebrate();
   } catch (e) {
